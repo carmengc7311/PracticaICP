@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import RegistrationLibrary_Sacristan_Pablo as RegistrationLibrary
+import RegistrationLibrary_Garcia_Carmen as RegistrationLibrary
 
 def plot_inputs(target, source):
     plt.figure(figsize=(8, 6))
