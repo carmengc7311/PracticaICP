@@ -116,15 +116,9 @@ def main():
     # Perturbate source:
     source = add_gaussian_noise(source, 2)
     
-    source = add_point_to_points(source, (-30,-60))
-    source = add_point_to_points(source, (-20,-6.50))
-    source = add_point_to_points(source, (-20,-5.50))
-    source = add_point_to_points(source, (-20.5,-50))
-    source = add_point_to_points(source, (-20.5,-50.5))
-    source = add_point_to_points(source, (-20,-5))
-    source = add_point_to_points(source, (-20.5,-60.5))
-    source = add_point_to_points(source, (-20,-60.5))
-    source = add_point_to_points(source, (-20.5,-60))
+    #Outliers. Descomentar cuando algoritmo funcione solo
+    # for i in range(1000):    
+    #     source = add_point_to_points(source, (-20.5,-60))
 
     # Plot inputs
     plot_inputs(target, source)
