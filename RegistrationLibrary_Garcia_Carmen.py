@@ -38,7 +38,9 @@ def calculate_distances_and_correspondences(
     return correspondances, distances
 
 def calculate_best_fit_transform(source, target, correspondances):
-    #TODO: usar el código de la presentación
+    # Calcula la transformación rígida óptima entre dos sets de puntos en N dimensiones.
+    # Devuelve una matriz de transformación de dimensiones (N+1)x(N+1)
+    
     # Seleccionar puntos que tienen correspondencia
     source_correspondances = correspondances[:, 0] 
     target_correspondances = correspondances[:, 1]
@@ -68,25 +70,28 @@ def calculate_best_fit_transform(source, target, correspondances):
     # Cálculo de la traslación
     t = centroid_target - R @ centroid_source
     
-    # Construir la pose 3x3 con la matriz de rotación R y la traslación t
-    iteration_transformation = np.eye(3)
-    iteration_transformation[0:2,0:2] = R
-    iteration_transformation[0:2,2] = t
+    # Construir la matriz de transformación (3x3 o 4x4)
+    # con la matriz de rotación R y la traslación t
+    D = source_correspondances.shape[1] # dimensión: 2 o 3
+    
+    iteration_transformation = np.eye(D+1)
+    iteration_transformation[0:D,0:D] = R
+    iteration_transformation[0:D,D] = t
     return iteration_transformation
 
     
 def transform_points(source_copy, iteration_transformation):
-    # TODO: aplicar la transformación
-    # método válido solo para 2D
-    N = source_copy.shape[0]
-    source_copy_h = np.ones((N, 3)) 
-    source_copy_h[:, :2] = source_copy
+    
+    N = source_copy.shape[0] # número de puntos
+    D = source_copy.shape[1] # dimensión: 2 o 3
+    source_copy_h = np.ones((N, D + 1)) 
+    source_copy_h[:, :D] = source_copy
     source_transformed_h = source_copy_h @ iteration_transformation.T
-    source_copy = source_transformed_h[:, :2]
+    source_copy = source_transformed_h[:, :D]
     return source_copy
 
 def calculate_rmse(distances):
-    #TODO
+    #TODO: df
     if len(distances) == 0:
         return np.inf 
     
