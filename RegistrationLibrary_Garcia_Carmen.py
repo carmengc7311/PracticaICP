@@ -103,7 +103,7 @@ def calculate_rmse(distances):
 def icp(target, source,
         max_correspondance_distance = 1000,
         max_iterations = 100,
-        metric_delta_threshold = 1e-6):
+        metric_delta_threshold = 1e-7):
     src = source.copy()
     prev_metric = float('inf')
     history = []
