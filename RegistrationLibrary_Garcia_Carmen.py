@@ -21,6 +21,12 @@ def calculate_distances_and_correspondences(
     # "Máscara" de correspondencias válidas (puntos dentro del rango)
     valid = nearest_dist <= max_correspondance_distance
     
+    # Si no hay correspondencias válidas devolvemos arrays vacíos para imple-
+    # mentar el break del icp
+    if not np.any(valid):
+        D = source.shape[1]
+        return np.empty((0, 2, D)), np.empty((0,))
+    
     # Filtrar solo los pares válidos
     source_valid = source[valid]
     target_valid = target[nearest_idx[valid]]
@@ -34,7 +40,7 @@ def calculate_distances_and_correspondences(
 def calculate_best_fit_transform(source, target, correspondances):
     #TODO: usar el código de la presentación
     # Seleccionar puntos que tienen correspondencia
-    source_correspondances = correspondances[:, 0]
+    source_correspondances = correspondances[:, 0] 
     target_correspondances = correspondances[:, 1]
     
     # Calcular centroides de dichos puntos
@@ -81,12 +87,18 @@ def transform_points(source_copy, iteration_transformation):
 
 def calculate_rmse(distances):
     #TODO
+    if len(distances) == 0:
+        return np.inf 
+    
+    dist_squared = distances **2
+    dist_squared_mean = dist_squared.mean()
+    rmse = np.sqrt(dist_squared_mean) #raíz cuadrada de la media
     return rmse
 
 def icp(target, source,
         max_correspondance_distance = 1000,
-        max_iterations = 4,
-        metric_delta_threshold = 1e-20):
+        max_iterations = 100,
+        metric_delta_threshold = 1e-6):
     src = source.copy()
     prev_metric = float('inf')
     history = []
@@ -95,11 +107,15 @@ def icp(target, source,
 
     for i in range(max_iterations):
         # Step 1:
-        distances, correspondances = calculate_distances_and_correspondences(
+        correspondances, distances = calculate_distances_and_correspondences(
             target, src,
             max_correspondance_distance
             )
-        
+        # Si ya no hay correspondencias válidas significa que no podemos mejo-
+        # rar el ICP -- lo paramos:
+        if len(distances) == 0:
+            break
+ 
         # Step 2:
         iteration_transformation = calculate_best_fit_transform(src, target, correspondances)
         
