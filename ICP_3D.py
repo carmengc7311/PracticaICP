@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import RegistrationLibrary_Sacristan_Pablo as RegistrationLibrary
+import RegistrationLibrary_Garcia_Carmen as RegistrationLibrary
 import trimesh
 import time
 
@@ -103,7 +103,7 @@ def generate_registration_animation_3D(target, source, history):
         )
     plt.legend()
     
-    ani.save("Registration2DAnimation.gif", writer='pillow')
+    ani.save("Registration3DAnimation.gif", writer='pillow')
     #ani.save("Registration3DAnimation.mp4")
 
 def add_gaussian_noise_3D(points, sigma):
