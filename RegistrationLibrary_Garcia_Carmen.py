@@ -1,5 +1,23 @@
 import numpy as np
 
+def auto_max_distance(source, target, percentile=90):
+    """ Estima un umbral para max_correspondance_distance usando únicamente la 
+    distancia al vecino más cercano. Así reduce el efecto de valores atípicos
+    y de regiones sin solapamiento."""
+    
+    # Calculamos todas las diferencias entre cada punto del source y cada punto del target.
+    diff = source[:, None, :] - target[None, :, :]
+
+    # Calculamos la norma euclídea a lo largo del eje de dimensión D → matriz (N, M).
+    distances = np.linalg.norm(diff, axis=2)
+    
+    # Distancia al vecino más cercano (vector de longitud N)
+    distance_nearest = distances.min(axis=1)
+    
+    # Tomamos el percentil especificado como distancia máxima razonable.
+    return np.percentile(distance_nearest, percentile)
+  
+    
 def calculate_distances_and_correspondences(
         target, source,
         max_correspondance_distance):
@@ -36,6 +54,7 @@ def calculate_distances_and_correspondences(
     correspondances = np.stack((source_valid, target_valid), axis =1)
     
     return correspondances, distances
+
 
 def calculate_best_fit_transform(source, target, correspondances):
     # Calcula la transformación rígida óptima entre dos sets de puntos en N dimensiones.
@@ -90,8 +109,8 @@ def transform_points(source_copy, iteration_transformation):
     source_copy = source_transformed_h[:, :D]
     return source_copy
 
+
 def calculate_rmse(distances):
-    #TODO: df
     if len(distances) == 0:
         return np.inf 
     
@@ -100,15 +119,22 @@ def calculate_rmse(distances):
     rmse = np.sqrt(dist_squared_mean) #raíz cuadrada de la media
     return rmse
 
+# TODO: afinar parámetros
+  
+
 def icp(target, source,
-        max_correspondance_distance = 1000,
+        max_correspondance_distance = None,
         max_iterations = 100,
-        metric_delta_threshold = 1e-7):
+        metric_delta_threshold = 1e-6):
+    
     src = source.copy()
     prev_metric = float('inf')
     history = []
     dim = source.shape[1]
     total_transformation = np.eye(dim + 1)
+    #pasamos None por defecto para calcular automáticamente la distancia máxima
+    if max_correspondance_distance is None:
+       max_correspondance_distance = auto_max_distance(src, target)
 
     for i in range(max_iterations):
         # Step 1:
